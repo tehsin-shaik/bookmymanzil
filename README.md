@@ -110,4 +110,3 @@ The project is currently in the **development process**. At this stage, the desi
 BookMyManzil is more than a hotel booking system.
 
 It is a connected, AI-enhanced platform designed to bridge the gap between guest convenience, hotel efficiency, and modern intelligent hospitality technology.
->>>>>>> bbc645eeeb8cff4b3a69555254f675a003999957
