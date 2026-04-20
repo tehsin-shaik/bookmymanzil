@@ -259,7 +259,9 @@ async function logInWithExpectedRole(expectedArea: LoginArea, formData: FormData
     };
   }
 
-  if (resolvedAppUser.role === "guest") {
+  const resolvedRole = readString(resolvedAppUser.role);
+
+  if (resolvedRole === "guest") {
     if (expectedArea === "staff") {
       await supabase.auth.signOut();
       return { error: "This portal is for staff accounts only." };
@@ -267,21 +269,21 @@ async function logInWithExpectedRole(expectedArea: LoginArea, formData: FormData
     redirect(safeReturnTo || "/guest");
   }
 
-  if (!isStaffRole(resolvedAppUser.role)) {
+  if (!isStaffRole(resolvedRole)) {
     logAuthEvent("error", "staff-login-unsupported-role", {
-      role: resolvedAppUser.role,
+      role: resolvedRole,
       userEmail: data.user.email || email,
       userId: data.user.id,
     });
     await supabase.auth.signOut();
     return {
-      error: `Unsupported account role "${resolvedAppUser.role}". Please contact support.`,
+      error: `Unsupported account role "${resolvedRole}". Please contact support.`,
     };
   }
 
   logAuthEvent("info", "staff-login-succeeded", {
-    redirectTo: getStaffHomePath(resolvedAppUser.role),
-    role: resolvedAppUser.role,
+    redirectTo: getStaffHomePath(resolvedRole),
+    role: resolvedRole,
     userEmail: data.user.email || email,
     userId: data.user.id,
   });
@@ -291,11 +293,15 @@ async function logInWithExpectedRole(expectedArea: LoginArea, formData: FormData
     return { error: "This portal is for guest accounts only." };
   }
 
-  redirect(getStaffHomePath(resolvedAppUser.role));
+  redirect(getStaffHomePath(resolvedRole));
 }
 
 export async function logOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
+}
+
+function readString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
 }

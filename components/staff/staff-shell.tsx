@@ -41,7 +41,8 @@ export function StaffShell({
               <p className="mt-2 text-sm font-semibold text-stone-900">{session.fullName}</p>
               <p className="mt-1 text-sm text-stone-600">{session.jobTitle}</p>
               <p className="mt-1 text-xs uppercase tracking-[0.12em] text-amber-700">
-                {session.hotelName ||
+                {(session.role === "admin" ? "All Hotels" : null) ||
+                  session.hotelName ||
                   (isHotelScopedStaffRole(session.role) ? "Hotel Assignment Pending" : "All Hotels Access")}
               </p>
             </div>

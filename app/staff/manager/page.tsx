@@ -5,12 +5,17 @@ import { getManagerOverview } from "@/lib/staff/operations";
 export default async function ManagerDashboardPage() {
   const { data, staffSession } = await getManagerOverview();
   const scopeLabel = staffSession.hotelName || "your assigned hotel";
+  const isAdmin = staffSession.role === "admin";
 
   return (
     <StaffShell
-      description={`See the current booking volume, guest count, and room status mix for ${scopeLabel}.`}
+      description={
+        isAdmin
+          ? "See bookings, users, hotels, and room operations across every property."
+          : `See the current booking volume, guest count, and room status mix for ${scopeLabel}.`
+      }
       session={staffSession}
-      title="Manager overview"
+      title={isAdmin ? "Admin overview" : "Manager overview"}
     >
       <section className="grid gap-4 md:grid-cols-3">
         <MetricCard label="Hotel Bookings" value={String(data.bookingCount)} />

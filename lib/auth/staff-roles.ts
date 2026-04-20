@@ -14,12 +14,20 @@ export function isServiceStaffRole(role: string) {
   return role === "service_staff";
 }
 
+export function isHotelManagerRole(role: string) {
+  return role === "hotel_manager";
+}
+
+export function isAdminRole(role: string) {
+  return role === "admin";
+}
+
 export function isHotelScopedStaffRole(role: string) {
-  return isReceptionRole(role) || isServiceStaffRole(role) || role === "hotel_manager";
+  return isReceptionRole(role) || isServiceStaffRole(role) || isHotelManagerRole(role);
 }
 
 export function isManagerRole(role: string) {
-  return role === "hotel_manager" || role === "admin";
+  return isHotelManagerRole(role) || isAdminRole(role);
 }
 
 export function isServiceRole(role: string) {

@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { updateServiceRequestStatusAsStaff } from "@/lib/service-requests";
 
 export async function updateStaffServiceRequestStatus(formData: FormData) {
+  // This is the server-action bridge from the staff worklist UI into the shared
+  // service-request state machine, then back out through the same guest/staff pages.
   const requestId = String(formData.get("requestId") || "").trim();
   const targetStatus = String(formData.get("targetStatus") || "").trim();
   const result = await updateServiceRequestStatusAsStaff({

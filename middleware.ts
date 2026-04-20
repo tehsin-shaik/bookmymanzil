@@ -59,7 +59,22 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && (isGuestProtected || isStaffProtected || isGuestAuthPage || isStaffAuthPage)) {
-    const { data: appUser, error: appUserError } = await loadAppUserForMiddleware(user.id, supabase);
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+    const profileClient =
+      url && serviceRoleKey
+        ? createSupabaseClient(url, serviceRoleKey, {
+            auth: {
+              autoRefreshToken: false,
+              persistSession: false,
+            },
+          })
+        : supabase;
+    const { data: appUser, error: appUserError } = await profileClient
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
 
     if (appUserError) {
       console.error("[middleware] app-user-lookup-failed", {
@@ -107,34 +122,6 @@ export async function middleware(request: NextRequest) {
   }
 
   return response;
-}
-
-async function loadAppUserForMiddleware(
-  userId: string,
-  fallbackClient: {
-    from: (table: string) => {
-      select: (columns: string) => {
-        eq: (column: string, value: unknown) => {
-          maybeSingle: () => PromiseLike<{ data: Record<string, unknown> | null; error: { message: string } | null }>;
-        };
-      };
-    };
-  }
-) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
-
-  const client =
-    url && serviceRoleKey
-      ? createSupabaseClient(url, serviceRoleKey, {
-          auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-          },
-        })
-      : fallbackClient;
-
-  return client.from("users").select("role").eq("id", userId).maybeSingle();
 }
 
 export const config = {

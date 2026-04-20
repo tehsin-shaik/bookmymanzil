@@ -77,6 +77,8 @@ const ALLOWED_STAFF_SERVICE_ROLES = ["reception_staff", "service_staff", "hotel_
 export async function getGuestStayServiceRequestState(
   reservationCode: string
 ): Promise<{ data: GuestStayServiceRequestState | null; error: string | null }> {
+  // This loads the stay-scoped service-request view for the guest details page.
+  // It keeps request creation locked to checked-in stays and reads from the same rows staff update.
   const bookingResult = await getGuestOwnedBookingOperationalRecord(reservationCode);
 
   if (bookingResult.error || !bookingResult.data) {
@@ -115,6 +117,8 @@ export async function createGuestServiceRequest(input: {
   preferredTime: string;
   reservationCode: string;
 }): Promise<{ error: string | null; success: boolean }> {
+  // This creates a guest service request against one concrete child reservation/room.
+  // Grouped bookings stay intact, but each request still points to a real reservation_id + room_id.
   const bookingResult = await getGuestOwnedBookingOperationalRecord(input.reservationCode);
 
   if (bookingResult.error || !bookingResult.data) {
@@ -210,6 +214,8 @@ export async function getStaffServiceWorklist(filters: {
   category: string;
   status: string;
 }): Promise<{ data: StaffServiceWorklistState; error: string | null }> {
+  // This is the operational staff worklist. It starts from raw service_requests,
+  // then hydrates reservation, hotel, guest, room, and category context inside the allowed hotel scope.
   const staffSession = await requireStaffSession([...ALLOWED_STAFF_SERVICE_ROLES]);
   const scopeIssue = getStaffOperationalScopeIssue(staffSession);
 
@@ -333,6 +339,8 @@ export async function updateServiceRequestStatusAsStaff(input: {
   requestId: string;
   targetStatus: string;
 }): Promise<{ error: string | null; reservationCode: string | null; success: boolean }> {
+  // Staff status updates are validated against the linked reservation first so
+  // hotel-scoped roles can only move requests that belong to their assigned property.
   const staffSession = await requireStaffSession([...ALLOWED_STAFF_SERVICE_ROLES]);
   const scopeIssue = getStaffOperationalScopeIssue(staffSession);
 

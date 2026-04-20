@@ -53,6 +53,8 @@ function buildBookingDetailsRedirect(reservationCode: string, error: string) {
 
 // This action submits a checked-in guest service request for the current stay.
 export async function submitGuestServiceRequest(formData: FormData) {
+  // This action keeps guest request submission on the stay page, then revalidates
+  // the same booking surfaces staff updates will later feed back into.
   const reservationCode = String(formData.get("reservationCode") || "").trim();
   const result = await createGuestServiceRequest({
     categoryId: String(formData.get("categoryId") || "").trim(),

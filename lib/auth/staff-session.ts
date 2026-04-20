@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { loadAppUserRecord, loadStaffProfileRecord } from "@/lib/auth/profile-access";
 import {
   getStaffHomePath,
+  isAdminRole,
   isHotelScopedStaffRole,
   isManagerRole,
   isReceptionRole,
@@ -11,6 +12,7 @@ import {
   isStaffRole,
   type StaffRole,
 } from "@/lib/auth/staff-roles";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export type StaffSessionState = {
@@ -37,6 +39,11 @@ function logStaffSessionEvent(
 type StaffSessionResolution =
   | {
       authenticated: false;
+      error: null;
+      session: null;
+    }
+  | {
+      authenticated: true;
       error: null;
       session: null;
     }
@@ -139,10 +146,12 @@ async function loadStaffSessionResolution(): Promise<StaffSessionResolution> {
     };
   }
 
-  if (!appUser || !isStaffRole(appUser.role)) {
+  const resolvedRole = asString(appUser?.role);
+
+  if (!appUser || !isStaffRole(resolvedRole)) {
     logStaffSessionEvent("info", "non-staff-or-missing-app-user", {
       hasAppUser: Boolean(appUser),
-      role: appUser?.role || null,
+      role: resolvedRole || null,
       userId: user.id,
       userEmail: user.email || "",
     });
@@ -172,7 +181,7 @@ async function loadStaffSessionResolution(): Promise<StaffSessionResolution> {
   if (staffProfileError) {
     logStaffSessionEvent("error", "staff-profile-lookup-failed", {
       message: staffProfileError.message,
-      role: appUser.role,
+      role: resolvedRole,
       userId: user.id,
       userEmail: user.email || "",
     });
@@ -184,14 +193,14 @@ async function loadStaffSessionResolution(): Promise<StaffSessionResolution> {
   }
 
   const hotelId = asOptionalString(staffProfile?.hotel_id);
-  const hasOperationalHotelScope = !isHotelScopedStaffRole(appUser.role) || Boolean(hotelId);
+  const hasOperationalHotelScope = !isHotelScopedStaffRole(resolvedRole) || Boolean(hotelId);
   const hotelName = hotelId ? await loadStaffHotelName(supabase, hotelId) : null;
 
   if (!hasOperationalHotelScope) {
     logStaffSessionEvent("info", "missing-hotel-scope", {
       hasStaffProfile: Boolean(staffProfile),
       hotelId: staffProfile?.hotel_id ?? null,
-      role: appUser.role,
+      role: resolvedRole,
       userId: user.id,
       userEmail: user.email || "",
     });
@@ -203,7 +212,7 @@ async function loadStaffSessionResolution(): Promise<StaffSessionResolution> {
 
   logStaffSessionEvent("info", "staff-session-ready", {
     hotelId,
-    role: appUser.role,
+    role: resolvedRole,
     userId: user.id,
     userEmail: user.email || "",
   });
@@ -219,13 +228,17 @@ async function loadStaffSessionResolution(): Promise<StaffSessionResolution> {
       hotelId,
       hotelName,
       id: user.id,
-      jobTitle: asString(staffProfile?.job_title) || defaultJobTitle(appUser.role),
-      role: appUser.role,
+      jobTitle: asString(staffProfile?.job_title) || defaultJobTitle(resolvedRole as StaffRole),
+      role: resolvedRole as StaffRole,
     },
   };
 }
 
 export function getStaffSectionTitle(role: StaffRole) {
+  if (isAdminRole(role)) {
+    return "Admin";
+  }
+
   if (isManagerRole(role)) {
     return "Manager";
   }
@@ -269,7 +282,23 @@ async function loadStaffHotelName(
   supabase: Awaited<ReturnType<typeof createClient>>,
   hotelId: string
 ) {
-  const { data: hotel, error } = await supabase.from("hotels").select("name").eq("id", hotelId).maybeSingle();
+  const readableClient =
+    (createAdminClient() as {
+      from: (table: string) => {
+        select: (columns: string) => {
+          eq: (column: string, value: unknown) => PromiseLike<{
+            data: Record<string, unknown> | null;
+            error: { message: string } | null;
+          }> & {
+            maybeSingle: () => PromiseLike<{
+              data: Record<string, unknown> | null;
+              error: { message: string } | null;
+            }>;
+          };
+        };
+      };
+    } | null) ?? supabase;
+  const { data: hotel, error } = await readableClient.from("hotels").select("name").eq("id", hotelId).maybeSingle();
 
   if (error) {
     logStaffSessionEvent("error", "staff-hotel-lookup-failed", {
