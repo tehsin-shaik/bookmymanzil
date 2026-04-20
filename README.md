@@ -99,8 +99,8 @@ The project is currently in the **development process**. At this stage, the desi
 | Week 2 | Feasibility Study | Completed |
 | Weeks 3–4 | Requirements Analysis | Completed |
 | Weeks 5–7 | Architecture Design and Modelling | Completed |
-| Weeks 8–10 | Development | In Progress |
-| Week 11 | Testing and Quality Assurance | Upcoming |
+| Weeks 8–10 | Development | Completed |
+| Week 11 | Testing and Quality Assurance | In Progress |
 | Week 12 | Final Submission and Documentation | Upcoming |
 
 ---
