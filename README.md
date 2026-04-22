@@ -5,13 +5,10 @@
 
 A unified platform for **hotel booking**, **digital guest stay management**, and **hotel operations** — enhanced with **AI-powered assistance** and **intelligent pricing insights**.
 
-<p>
-  <img src="https://img.shields.io/badge/Status-In%20Development-0a7cff?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Phase-Development-6f42c1?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Focus-Hotel%20Tech-16a34a?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/AI-Enabled-f59e0b?style=for-the-badge" />
-</p>
+<p> 
+  <img src="https://img.shields.io/badge/Status-Testing%20in%20Progress-0a7cff?style=for-the-badge" /> <img src="https://img.shields.io/badge/Phase-Quality%20Assurance-6f42c1?style=for-the-badge" /> <img src="https://img.shields.io/badge/Focus-System%20Validation-16a34a?style=for-the-badge" /> <img src="https://img.shields.io/badge/AI-Enabled-f59e0b?style=for-the-badge" /> 
 
+</p> 
 </div>
 
 ---
@@ -81,15 +78,31 @@ This allows the system to support both:
 - guest-facing booking experiences
 - internal hotel management workflows
 
+## Tech Stack
+
+### Frontend
+- **Next.js (React)** for frontend structure and full-stack application development  
+- **TypeScript** for application logic and type safety  
+- **Tailwind CSS** for modern and responsive styling  
+
+### Backend
+- **Next.js App Router** for application routing and backend integration  
+- **Server Actions** for backend logic and form handling  
+- **Supabase** for authentication, database, and storage  
+- **PostgreSQL via Supabase** for relational data management  
+
 ## Current Project Status
-The project is currently in the **development process**. At this stage, the design and modelling work is being transformed into a working prototype, with focus on implementing the main modules and preparing the system for testing.
+The project has moved beyond the main development stage and is currently in the testing and quality assurance phase.
+
+At this stage, the core modules and system workflows have been implemented, and the focus is now on validating functionality, identifying issues, improving system reliability, and preparing the platform for final submission and documentation.
 
 ### Current focus
-- frontend implementation
-- backend setup and development
-- core module integration
-- UI development based on mockups
-- preparation for testing and quality assurance
+= system testing and validation
+- quality assurance of core modules
+- bug detection and issue fixing
+- user interface review and refinement
+- integration testing across frontend and backend
+- preparation for final documentation and submission
   
 # Project Timeline
 
