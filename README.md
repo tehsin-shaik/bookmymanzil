@@ -3,6 +3,9 @@
 # BookMyManzil
 ### Smart, AI-Driven Hotel Booking and Guest Experience Management System
 
+[![BookMyManzil — Website Preview](assets/bookmymanzil.png)](https://bookmymanzil.vercel.app/)
+
+
 A unified platform for **hotel booking**, **digital guest stay management**, and **hotel operations** — enhanced with **AI-powered assistance** and **intelligent pricing insights**.
 
 <p> 
