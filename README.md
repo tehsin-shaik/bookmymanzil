@@ -14,6 +14,14 @@ A unified platform for **hotel booking**, **digital guest stay management**, and
 </div>
 
 ---
+## Demo Video
+
+Watch the complete BookMyManzil journey: guest booking, AI-powered
+assistance, reception, service requests, hotel management, and checkout. 
+
+https://github.com/user-attachments/assets/5e5d48d2-32b7-41af-ad5e-0c24b742efc8
+
+---
 
 ## Overview
 
